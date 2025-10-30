@@ -1,0 +1,37 @@
+name: Build Android APK
+
+on:
+  # Ejecutar el flujo de trabajo cuando haya un 'push' a la rama principal (main)
+  push:
+    branches:
+      - main
+  # Permite ejecutar el flujo de trabajo manualmente desde la interfaz de GitHub
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Ejecuta el trabajo en el sistema operativo Linux más reciente (Ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        # Descarga tu código (main.py, buildozer.spec, etc.) del repositorio
+        uses: actions/checkout@v4
+
+      - name: Buildozer Android Debug
+        # Utiliza una acción de Buildozer preconfigurada
+        uses: ArtemiusUA/buildozer-action@master
+        id: buildozer
+        with:
+          # Indicamos que el objetivo es Android
+          target: android
+          # Indicamos que queremos una compilación de depuración (debug)
+          build_type: debug
+
+      - name: Upload APK
+        # Sube el APK compilado como un "artefacto" para que lo puedas descargar
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kivy-APK
+          # Esta es la ruta donde Buildozer pone el APK, usamos el nombre de tu paquete
+          path: bin/apkcalculadora-*-debug.apk
